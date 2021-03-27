@@ -42,7 +42,7 @@ namespace ProcessPaymentWeb.Controllers
                     StringContent content = new StringContent(JsonConvert.SerializeObject(processPayment), Encoding.UTF8, "application/json");
 
                     using (var Response = await client.PostAsync("http://localhost:4789/api/ProcessPay/Create", content))
-                    {
+                     {
                         if (Response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             //TempData["Profile"] = JsonConvert.SerializeObject(user);
@@ -54,7 +54,7 @@ namespace ProcessPaymentWeb.Controllers
                         {
                             // ModelState.Clear();
                             //ModelState.AddModelError(string.Empty, "Username or Password is Incorrect");
-                            return Json("ProcessPaymentView");
+                            return RedirectToAction("ProcessPaymentView");
                         }
 
                     }

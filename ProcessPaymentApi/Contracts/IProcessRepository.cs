@@ -4,7 +4,7 @@ using ProcessPaymentApi.Entities;
 
 namespace ProcessPaymentApi.Contracts
 {
-    public interface IUserRepository : IRepositoryBase<ProcessPayment>
+    public interface IProcessRepository : IRepositoryBase<ProcessPayment>
     {
 
     }
