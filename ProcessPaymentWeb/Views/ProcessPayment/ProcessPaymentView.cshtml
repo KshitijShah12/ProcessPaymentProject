@@ -113,13 +113,10 @@
 
         /* Responsive layout - when the screen is less than 800px wide, make the two columns stack on top of each other instead of next to each other (also change the direction - make the "cart" column go on top) */
     </style>
-
-
-
 </head>
 <body>
 
-    @using (Html.BeginForm("ProcessPayment", "ProcessPayment", FormMethod.Post, new { @id = "FormProcessPayment" }))
+    @using (Html.BeginForm("ProcessPaymentView", "ProcessPayment", FormMethod.Post, new { @id = "FormProcessPayment" }))
     {
 
         @Html.AntiForgeryToken()
@@ -145,8 +142,8 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="ccnum">Credit card number</label>
-                                    @Html.TextBoxFor(m => m.CreditCardNumber)
-                                    @Html.ValidationMessageFor(m => m.CreditCardNumber, "", new { @class = "text-danger" })
+                                    @Html.TextBoxFor(m => m.CreditCardNumber, new { @maxlength = "16" } )
+                                    @Html.ValidationMessageFor(m => m.CreditCardNumber, "", new { @class = "text-danger"})
                                 </div>
                                 <div class="form-group">
                                     <label for="expmonth">Expiry Date</label>
@@ -202,8 +199,19 @@
 
 <script type="text/javascript">
 
-    $(document).ready(function () {
+    function creditCardValidation(creditCradNum) {
+        var regEx = /^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$/;
+        if (String(creditCradNum).match(regEx)) {
+                 alert("It's a valid credit card number.");
+                return true;
+            }
+        else {
+                alert("Please enter a valid credit card number.");
+                return false;
+            }
+        }
 
+    $(document).ready(function () {
         $('.date-picker').datepicker({
             changeMonth: true,
             changeYear: true,
@@ -217,6 +225,10 @@
 
         $('#btnsubmit').on('click', function () {
             $("#FormProcessPayment").valid();
+            var crednum = $("#CreditCardNumber").val();
+            if (crednum != null && crednum !="") {
+                creditCardValidation(crednum)
+            }
         });
     })
 

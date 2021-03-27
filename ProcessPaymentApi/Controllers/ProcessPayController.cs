@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +53,14 @@ namespace ProcessPaymentApi.Controllers
                     return processResponse;
                 }
 
-                _processPaymentContext.ProcessPaymentRepository.Create(process);
+                ProcessPayment processPayment = new ProcessPayment();
+                processPayment.CardHolder = process.CardHolder;
+                processPayment.CreditCardNumber = process.CreditCardNumber;
+                processPayment.ExpirationDate = process.ExpirationDate;
+                processPayment.SecurityCode = encrypt(process.CardHolder);
+                processPayment.Amount = process.Amount;
+
+                _processPaymentContext.ProcessPaymentRepository.Create(processPayment);
                 var UpdatedRowValue = await _processPaymentContext.ProcessPaymentRepository.SaveAsync();
 
                 if (UpdatedRowValue == 1)
@@ -58,7 +68,7 @@ namespace ProcessPaymentApi.Controllers
                     
                     
                     processResponse.Response = HttpStatusCode.OK;
-                    processResponse.Result = process;
+                    processResponse.Result = processPayment;
 
                     ps.CardId = processResponse.Result.Id;
                     ps.ProcessStatusName = "Processed";
@@ -92,5 +102,32 @@ namespace ProcessPaymentApi.Controllers
                 //ex will usefull in NLog
             }
         }
+
+
+
+        public string encrypt(string encryptString)
+        {
+            string EncryptionKey = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            byte[] clearBytes = Encoding.Unicode.GetBytes(encryptString);
+            using (Aes encryptor = Aes.Create())
+            {
+                Rfc2898DeriveBytes pdb = new Rfc2898DeriveBytes(EncryptionKey, new byte[] {
+            0x49, 0x76, 0x61, 0x6e, 0x20, 0x4d, 0x65, 0x64, 0x76, 0x65, 0x64, 0x65, 0x76
+        });
+                encryptor.Key = pdb.GetBytes(32);
+                encryptor.IV = pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(clearBytes, 0, clearBytes.Length);
+                        cs.Close();
+                    }
+                    encryptString = Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            return encryptString;
+        }
+
     }
 }

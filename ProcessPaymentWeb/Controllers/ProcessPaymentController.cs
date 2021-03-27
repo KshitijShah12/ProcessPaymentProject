@@ -33,7 +33,7 @@ namespace ProcessPaymentWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ProcessPaymentAsync(ProcessPayment  processPayment)
+        public async Task<IActionResult> ProcessPaymentView(ProcessPayment  processPayment)
         {
             if (ModelState.IsValid)
             {
@@ -45,23 +45,16 @@ namespace ProcessPaymentWeb.Controllers
                      {
                         if (Response.StatusCode == System.Net.HttpStatusCode.OK)
                         {
-                            //TempData["Profile"] = JsonConvert.SerializeObject(user);
-
-                            //return RedirectToAction("Profile");
-
+                            return RedirectToAction("ProcessPaymentView");
                         }
                         else
                         {
-                            // ModelState.Clear();
-                            //ModelState.AddModelError(string.Empty, "Username or Password is Incorrect");
                             return RedirectToAction("ProcessPaymentView");
                         }
-
                     }
-
                 }
             }
-                return RedirectToAction("ProcessPaymentView");
+                return View();
         }
     }
 }

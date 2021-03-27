@@ -11,20 +11,20 @@ namespace ProcessPaymentWeb.Models
     public class ProcessPayment
     {
         public long Id { get; set; }
+        [Display(Name = "Credit Card Number")]
         [Required]
-        [CreditCard]
         public string CreditCardNumber { get; set; }
 
         [Display(Name = "Card Holder Name")]
         [Required]
         public string CardHolder { get; set; }
-
+        [Display(Name = "Expiry Date")]
         [Required]
         public DateTime ExpirationDate { get; set; }
 
 
         public string SecurityCode { get; set; }
-
+        
         [Required]
         public string Amount { get; set; }
     }
